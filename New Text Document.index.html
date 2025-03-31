@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>给官苡萱的时光密码</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #555;
+            text-align: center;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        h1 {
+            color: #ff6b8b;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: normal;
+        }
+        
+        .math-expression {
+            font-family: 'Courier New', monospace;
+            font-size: 36px;
+            margin: 30px auto;
+            padding: 25px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            line-height: 1.5;
+        }
+        
+        input {
+            padding: 15px;
+            border: 2px solid #ffb3c6;
+            border-radius: 10px;
+            font-size: 24px;
+            margin: 20px 0;
+            width: 200px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #ff6b8b;
+            background-color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #ff85a2;
+            box-shadow: 0 0 10px rgba(255, 107, 139, 0.3);
+        }
+        
+        button {
+            background-color: #ff6b8b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 22px;
+            transition: all 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 4px 8px rgba(255, 107, 139, 0.3);
+        }
+        
+        button:hover {
+            background-color: #ff477e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 71, 126, 0.4);
+        }
+        
+        .success {
+            color: #ff6b8b;
+            font-weight: bold;
+            margin-top: 30px;
+            font-size: 26px;
+            display: none;
+            line-height: 1.6;
+            animation: fadeIn 1s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .footer {
+            margin-top: 40px;
+            font-size: 18px;
+            color: rgba(85, 85, 85, 0.7);
+        }
+        
+        .floating-cat {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.8;
+            animation: floatCat 15s linear infinite;
+        }
+        
+        @keyframes floatCat {
+            0% { 
+                transform: translateY(100vh) translateX(-50px) rotate(0deg); 
+                opacity: 0; 
+            }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { 
+                transform: translateY(-100px) translateX(50px) rotate(360deg); 
+                opacity: 0; 
+            }
+        }
+        
+        .hint {
+            color: #ff6b8b;
+            margin-top: 15px;
+            font-size: 18px;
+            display: none;
+            animation: fadeIn 0.5s;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>官苡萱的时光密码</h1>
+        
+        <div class="math-expression">
+            我的生日 - 你的生日= ?<br>
+        </div>
+        
+        <p>请输入计算结果：</p>
+        <input type="number" id="password-input" placeholder="输入答案">
+        <button onclick="checkPassword()">解锁时光胶囊</button>
+        
+        <div class="hint" id="hint"></div>
+        
+        <div class="success" id="success">
+            密码正确！<br>
+            密码锁：752<br><br>
+            现在你可以打开那个特别的盒子了<br><br>
+        </div>
+        
+        <div class="footer">
+            <p>用数学公式封存的心意</p>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="https://music.163.com/song/media/outer/url?id=186855.mp3" type="audio/mpeg">
+        <source src="https://music.163.com/song/media/outer/url?id=186855.mp3" type="audio/ogg">
+        您的浏览器不支持音频元素。
+    </audio>
+
+    <script>
+        // 创建漂浮的小猫
+        function createFloatingCats() {
+            const catSVG = `
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="40" r="30" fill="#ffd6e7"/>
+                    <circle cx="40" cy="30" r="5" fill="#555"/>
+                    <circle cx="60" cy="30" r="5" fill="#555"/>
+                    <path d="M45 45 Q50 55 55 45" stroke="#555" stroke-width="2" fill="none"/>
+                    <path d="M30 20 L20 10 M70 20 L80 10" stroke="#555" stroke-width="2"/>
+                    <path d="M30 60 Q50 80 70 60" stroke="#555" stroke-width="2" fill="none"/>
+                </svg>
+            `;
+            
+            setInterval(() => {
+                const cat = document.createElement('div');
+                cat.className = 'floating-cat';
+                cat.innerHTML = catSVG;
+                cat.style.left = Math.random() * 100 + '%';
+                cat.style.animationDuration = Math.random() * 10 + 10 + 's';
+                document.body.appendChild(cat);
+                
+                // 移除小猫元素以避免内存泄漏
+                setTimeout(() => {
+                    cat.remove();
+                }, 20000);
+            }, 1500);
+        }
+        
+        // 背景音乐控制
+        function setupMusic() {
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.3;
+            
+            // 用户交互后播放音乐（浏览器策略）
+            document.addEventListener('click', function initMusic() {
+                music.play().catch(e => console.log('自动播放被阻止'));
+                document.removeEventListener('click', initMusic);
+            });
+        }
+        
+        // 检查密码
+        let hintCount = 0;
+        const hints = [
+            "答案为两位数",
+            "我的生日离你一个月",
+            "我的生日相加为10"
+        ];
+        
+        function checkPassword() {
+            const correctPassword = 83;
+            const userInput = parseInt(document.getElementById('password-input').value);
+            
+            if (userInput === correctPassword) {
+                document.getElementById('success').style.display = 'block';
+                document.getElementById('hint').style.display = 'none';
+                document.getElementById('bgMusic').play();
+            } else {
+                document.getElementById('hint').textContent = hints[hintCount % hints.length];
+                document.getElementById('hint').style.display = 'block';
+                hintCount++;
+            }
+        }
+        
+        // 页面加载时初始化
+        window.onload = function() {
+            createFloatingCats();
+            setupMusic();
+            
+            // 按回车键也可以提交密码
+            document.getElementById('password-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
